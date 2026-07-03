@@ -6,6 +6,9 @@ import { clerkMiddleware } from '@clerk/express'
 import { serve } from "inngest/express";
 import { inngest, functions } from "./inngest/index.js"
 import showRouter from "./routes/showRoute.js"
+import bookingRouter from './routes/bookingRoute.js'
+import adminRouter from "./routes/adminRoute.js"
+import userRouter from "./routes/userRoute.js"
 
 // Loads .env file contents into process.env.
 dotenv.config()
@@ -41,6 +44,9 @@ app.use("/api/inngest", serve({ client: inngest, functions }));
 
 // routes
 app.use('/api/show',showRouter)
+app.use("/api/booking",bookingRouter)
+app.use("/api/admin",adminRouter)
+app.use("/api/user",userRouter)
 
 
 
