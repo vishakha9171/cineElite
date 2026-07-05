@@ -1,9 +1,10 @@
 import  { useEffect, useState } from 'react';
 import { Star, Calendar, Sparkles, PlusCircle, Check, X, Clock, CalendarDays } from 'lucide-react';
-import { dummyShowsData } from '../../assets/assets';
+// import { dummyShowsData } from '../../assets/assets';
 import Title from '../../components/admin/Title';
 import Loading from '../../components/Loading';
 import { votesFormat } from '../../lib/votesFormat';
+import { useAppContext } from '../../context/AppContextProvider';
 
 const AddShows = () => {
   const currency = import.meta.env.VITE_CURRENCY || '₹';
@@ -16,14 +17,25 @@ const AddShows = () => {
   const [showPrice, setShowPrice] = useState("");
   const [loading, setLoading] = useState(true);
 
+  // context taken
+  const {getToken,axios,user,image_base_url}=useAppContext()
+
+
   const fetchNowPlayingMovies = async () => {
-    setNowPlayingMovies(dummyShowsData);
-    setLoading(false);
+    try{
+      const data=axios.get("/api/shows/now-playing",{headers:{
+        Authorization:`Bearer ${await getToken()}`
+      }})
+      if(data.success) setNowPlayingMovies(data.movies);
+    }
+    catch(error){
+      console.error("error data fetching movies",error)
+    }
   };
 
   useEffect(() => {
-    fetchNowPlayingMovies();
-  }, []);
+    if(user) fetchNowPlayingMovies();
+  }, [user]);
 
   const handleDateTimeAdd = () => {
     if (!dateInput || !timeInput) return;
@@ -98,7 +110,7 @@ const AddShows = () => {
                 >
                   <div className="w-full h-60 overflow-hidden relative bg-zinc-950">
                     <img
-                      src={movie.poster_path}
+                      src={image_base_url+movie.poster_path}
                       alt=""
                       className={`w-full h-full object-cover transition-all duration-700 ease-out ${isSelected ? "brightness-100 scale-102" : "brightness-[0.75] group-hover:scale-105"}`}
                     />
