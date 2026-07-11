@@ -139,12 +139,14 @@ export const getShows = async (req, res) => {
 
     // 2. Filter out duplicate movies so each movie only appears once in the list
     const uniqueShows = new Set(shows.map(show => show.movie));
+    // console.log(uniqueShows)
     
     // 3. Convert the Set back to an array and send it to the frontend
     res.json({ 
       success: true, 
       shows: Array.from(uniqueShows) 
     });
+    // console.log(shows)
   } catch (error) {
     // 4. Handle any database or runtime errors gracefully
     console.error(error);

@@ -1,3 +1,5 @@
 # to avoid upload node modules on github
 
 node_modules
+
+.env

@@ -10,6 +10,8 @@ const Favorites = () => {
 
   const {shows,favoriteMovies}=useAppContext()
 
+  // console.log(shows);
+
   const favoriteMovieObj = shows.filter(movie =>
   favoriteMovies.includes(movie._id))
 

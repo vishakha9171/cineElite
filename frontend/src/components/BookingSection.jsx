@@ -69,7 +69,7 @@ const BookingSection = ({ movieId, dateSlots = {}, selectedDate, setSelectedDate
               return (
                 <button 
                   key={index} 
-                  onClick={() => setSelectedTime(slot.time)} 
+                  onClick={() => setSelectedTime(slot)} 
                   className={`px-5 py-3 rounded-xl border text-xs md:text-sm font-semibold tracking-wider transition-all duration-300 transform active:scale-95 cursor-pointer ${
                     isSelected 
                       ? "bg-white text-black border-white shadow-xl scale-105 font-bold" 
@@ -97,7 +97,7 @@ const BookingSection = ({ movieId, dateSlots = {}, selectedDate, setSelectedDate
         </div>
         
         <button 
-          onClick={()=>navigate(`/movies/${movieId}/${selectedDate}`)}
+          onClick={()=>navigate(`/movies/${movieId}/${selectedDate}/${encodeURIComponent(selectedTime.time)}`)}
           disabled={!selectedDate || !selectedTime} 
           className={`w-full sm:w-auto px-8 py-4 rounded-xl font-bold tracking-widest uppercase text-xs flex items-center justify-center gap-2 transition-all duration-500 transform ${
             selectedDate && selectedTime

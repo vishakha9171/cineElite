@@ -1,23 +1,86 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowRightIcon, Info, ShieldCheck } from 'lucide-react';
-import { dummyShowsData } from '../assets/assets';
+// import { dummyShowsData } from '../assets/assets';
 import { toast } from 'react-hot-toast';
+import {useAppContext} from '../context/AppContextProvider'
 
 const SeatLayout = () => {
-  const { id, date } = useParams();
+  const { id, date ,time } = useParams();
   const navigate = useNavigate();
 
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [show, setShow] = useState(null);
+  const [occupiedSeats, setOccupiedSeats] = useState([]);
 
 
-  useEffect(() => {
-    const matchedMovie = dummyShowsData.find(m => m._id === id || m.id?.toString() === id);
-    if (matchedMovie) {
-      setShow(matchedMovie);
+  const { axios, getToken, user } = useAppContext();
+
+  const decodedTime = decodeURIComponent(time);
+
+  const getShow = async () => {
+    try {
+      const { data } = await axios.get(`/api/show/${id}`);
+      
+      if (data.success) {
+        setShow(data);
+      }
+    } catch (error) {
+      console.log(error);
     }
-  }, [id]);
+  };
+
+  const bookTickets = async () => {
+  try {
+    if (!user) {
+      return toast.error('Please login to proceed');
+    }
+
+    const matchingSlot = show?.dateTime?.[date]?.find(slot => 
+      new Date(slot.time).toISOString() === new Date(decodeURIComponent(time)).toISOString()
+    );
+    
+    const finalShowId = matchingSlot ? matchingSlot.showId : show?.dateTime?.[date]?.[0]?.showId;
+
+    if (!finalShowId) {
+      return toast.error('Could not locate the show schedule ID. Please refresh.');
+    }
+
+    if (!selectedSeats || selectedSeats.length === 0) {
+      return toast.error('Please select at least one seat to proceed.');
+    }
+
+    const token = await getToken();
+    const { data } = await axios.post(
+      '/api/booking/create',
+      { 
+        showId: finalShowId, 
+        selectedSeats: selectedSeats 
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (data.success) {
+      toast.success(data.message || 'Tickets booked successfully!');
+      
+      setSelectedSeats([]); 
+      navigate('/my-bookings');
+
+    } else {
+      toast.error(data.message);
+    }
+  } catch (error) {
+    const errMsg = error.response?.data?.message || error.message;
+    toast.error(errMsg);
+  }
+};
+    useEffect(() => {
+      getShow()
+  });
 
 
   const handleSeatClick = (seatId) => {
@@ -104,6 +167,36 @@ const SeatLayout = () => {
       </div>
     );
   };
+
+  const getOccupiedSeats = async (showId) => {
+  try {
+    const { data } = await axios.get(`/api/booking/seats/${showId}`);
+    
+    if (data.success) {
+      setOccupiedSeats(data.occupiedSeats);
+    } else {
+      toast.error(data.message);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  };
+
+  useEffect(() => {
+    if (show && show.dateTime && show.dateTime[date]) {
+      const matchingSlot = show.dateTime[date].find(slot => 
+        new Date(slot.time).toISOString() === new Date(decodedTime).toISOString()
+      );
+      
+      const exactShowId = matchingSlot ? matchingSlot.showId : show.dateTime[date][0]?.showId;
+      
+      if (exactShowId) {
+        getOccupiedSeats(exactShowId);
+      }
+    }
+  }, [show, date, decodedTime]);
+
+
 
   if (!show) return null;
 
@@ -200,10 +293,7 @@ const SeatLayout = () => {
           </div>
 
           <button 
-            onClick={() => {
-              if (selectedSeats.length === 0) return toast.info("Please select at least one seat to proceed");
-              navigate('/my-bookings');
-            }}
+            onClick={() =>bookTickets()}
             disabled={selectedSeats.length === 0}
             className={`w-full sm:w-auto flex items-center justify-center gap-2 px-12 py-4 text-xs font-bold tracking-widest
                uppercase rounded-xl transition-all duration-300 transform ${

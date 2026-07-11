@@ -27,7 +27,9 @@ export const AppContextProvider=({children})=>{
             const {data}=await axios.get("/api/shows/all")
             if(data.success){
                 setShows(data.shows)
+                // console.log(shows)
             }
+            
             else{
                 toast.error(data.message)
             }

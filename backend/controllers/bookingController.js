@@ -77,7 +77,7 @@ export const getOccupiedSeats = async (req, res) => {
     const showData = await Show.findById(showId);
 
     // This line extracts all the keys (the seat names) from your occupiedSeats object and stores them inside a standard array.
-    const occupiedSeats = Object.keys(showData.occupiedSeats);
+    const occupiedSeats = showData.occupiedSeats ? Object.keys(showData.occupiedSeats) : [];
 
     res.json({ success: true, occupiedSeats });
   } catch (error) {
