@@ -9,6 +9,7 @@ import showRouter from "./routes/showRoute.js"
 import bookingRouter from './routes/bookingRoute.js'
 import adminRouter from "./routes/adminRoute.js"
 import userRouter from "./routes/userRoute.js"
+import { stripeWebhooks } from "./controllers/stripeWebhooks.js"
 
 // Loads .env file contents into process.env.
 dotenv.config()
@@ -25,6 +26,8 @@ app.use(clerkMiddleware())
 
 await connectDB();
 
+// Stripe webhook route
+app.use('/api/stripe', express.raw({type:'application/json'}), stripeWebhooks)
 
 // Home API routes
 app.get("/",(req,res)=>{

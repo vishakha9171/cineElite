@@ -27,6 +27,7 @@ import ListShows from './pages/admin/ListShows'
 // usecontext 
 import {useAppContext} from './context/AppContextProvider'
 import { SignIn } from '@clerk/react'
+import Loading from './components/Loading'
 
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
         <Route path="/movies/:id" element={<MovieDetail/>}/>
         <Route path="/movies/:id/:date/:time" element={<SeatLayout/>}/>
         <Route path="/my-bookings" element={<MyBookings/>}/>
+        <Route path="/loading/:nextUrl" element={<Loading/>}/>
         <Route path="/favorite" element={<Favorite/>}/>
         <Route path="/theaters" element={<Theaters/>}/>
         <Route path="/releases" element={<Releases/>}/>

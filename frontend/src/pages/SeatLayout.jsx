@@ -64,11 +64,9 @@ const SeatLayout = () => {
       }
     );
 
-    if (data.success) {
-      toast.success(data.message || 'Tickets booked successfully!');
-      
+    if (data.success) {  
+      window.location.href=data.url    
       setSelectedSeats([]); 
-      navigate('/my-bookings');
 
     } else {
       toast.error(data.message);

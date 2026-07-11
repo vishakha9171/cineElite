@@ -1,5 +1,16 @@
+import { useEffect,useParams,useNavigate } from "react";
 
 const Loading = () => {
+  const { nextUrl } = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (nextUrl) {
+      setTimeout(() => {
+        navigate('/' + nextUrl);
+      }, 8000);
+    }
+  }, []);
   return (
     <div className="w-full min-h-screen flex items-center justify-center bg-[#070a13] text-zinc-400">
       <div className="relative flex flex-col items-center gap-4">
