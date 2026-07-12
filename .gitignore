@@ -1,5 +1,5 @@
 # to avoid upload node modules on github
 
 backend/.env
-.env
+frontend/.env
 node_modules/
