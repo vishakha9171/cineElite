@@ -4,7 +4,8 @@ import { Ticket, Calendar, Clock, Receipt, CreditCard } from 'lucide-react';
 import BackdropCircle from '../components/BackdropCircle';
 import timeFormat from '../lib/timeFormat';
 import Loading from "../components/Loading";
-import {useAppContext} from '../context/AppContextProvider'
+import {useAppContext} from '../context/AppContextProvider';
+import {Link} from 'react-router-dom'
 
 const MyBookings = () => {
   const currency = import.meta.env.VITE_CURRENCY || '₹';
@@ -136,10 +137,10 @@ const MyBookings = () => {
 
                       {/* Pay Now Interactive Trigger Gate */}
                       {!item.isPaid && (
-                        <button className="flex items-center gap-1.5 mt-2 bg-gradient-to-r from-[#ff2c55] to-[#cc1b40] hover:opacity-95 text-white px-4
+                        <Link to={item.paymentLink} className="flex items-center gap-1.5 mt-2 bg-gradient-to-r from-[#ff2c55] to-[#cc1b40] hover:opacity-95 text-white px-4
                          py-1.5 text-xs font-bold uppercase tracking-wider rounded-lg transition transform active:scale-95 shadow-md shadow-[#ff2c55]/10 cursor-pointer">
                           <CreditCard className="w-3.5 h-3.5" /> Pay Now
-                        </button>
+                        </Link>
                       )}
                     </div>
 
