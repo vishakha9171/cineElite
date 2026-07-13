@@ -5,11 +5,12 @@ import Show from "../models/Show.js";
 // API to get all the nowPlaying movies from imdb endpoint
 export const getNowPlayingMovies=async(req,res)=>{
    try{
-    
+
+      const tmdbKey = process.env.TMDB_API_KEY?.trim();
      const {data}=await axios.get('https://api.themoviedb.org/3/movie/now_playing',{
         headers:{
-            'Authorization': `Bearer ${process.env.TMDB_API_KEY}`,
-            
+            'Authorization': `Bearer ${tmdbKey}`,
+            'accept': 'application/json'
         }
      })
      const movies=data.results;
@@ -57,7 +58,7 @@ export const addShow = async (req, res) => {
           'Authorization': `Bearer ${tmdbKey}`,
           'accept': 'application/json'
         },
-        timeout: 10000 
+         
         }),
         
         axios.get(`https://api.themoviedb.org/3/movie/${movieId}/credits`, {
@@ -65,7 +66,7 @@ export const addShow = async (req, res) => {
             'Authorization': `Bearer ${tmdbKey}`,
             'accept': 'application/json'
           },
-          timeout: 10000
+          
         }),
 
         axios.get(`https://api.themoviedb.org/3/movie/${movieId}/videos`, {
@@ -73,7 +74,7 @@ export const addShow = async (req, res) => {
             'Authorization': `Bearer ${tmdbKey}`,
             'accept': 'application/json'
           },
-          timeout: 10000
+          
         })
       ]);
 
