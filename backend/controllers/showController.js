@@ -2,6 +2,20 @@ import axios from "axios";
 import Movie from "../models/Movie.js"; 
 import Show from "../models/Show.js"; 
 
+
+async function fetchWithRetry(url, options, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await axios.get(url, options);
+    } catch (err) {
+      const isLastAttempt = i === retries - 1;
+      if (isLastAttempt) throw err;
+      console.log(`Retry ${i + 1}/${retries} for ${url} after error: ${err.code}`);
+      await new Promise(res => setTimeout(res, 500 * (i + 1)));
+    }
+  }
+}
+
 // API to get all the nowPlaying movies from imdb endpoint
 export const getNowPlayingMovies=async(req,res)=>{
    try{
@@ -37,46 +51,12 @@ export const addShow = async (req, res) => {
 
     if (!movie) {
       const tmdbKey = process.env.TMDB_API_KEY?.trim();
-      const [movieDetailsResponse, movieCreditsResponse, movieVideosResponse] = await Promise.all([
-        
-        // axios.get(`https://api.themoviedb.org/3/movie/${movieId}`, {
-        //   headers: { 'Authorization': `Bearer ${process.env.TMDB_API_KEY}`}
-        // }),
-        
-        // axios.get(`https://api.themoviedb.org/3/movie/${movieId}/credits`, {
-        //   headers: { 'Authorization': `Bearer ${process.env.TMDB_API_KEY}`}
-        // }),
+      const options = { headers: { Authorization: `Bearer ${tmdbKey}` }, family: 4 };
 
-        // axios.get(`https://api.themoviedb.org/3/movie/${movieId}/videos`, {
-        //   headers: { 'Authorization': `Bearer ${process.env.TMDB_API_KEY}`}
-        // })
+      const movieDetailsResponse = await fetchWithRetry(`https://api.themoviedb.org/3/movie/${movieId}`, options);
+      const movieCreditsResponse = await fetchWithRetry(`https://api.themoviedb.org/3/movie/${movieId}/credits`, options);
+      const movieVideosResponse = await fetchWithRetry(`https://api.themoviedb.org/3/movie/${movieId}/videos`, options);
 
-
-        // Since you are using a TMDB v4 Token,remove it from the params configuration object and send it exclusively inside an HTTP Authorization Header.
-        axios.get(`https://api.themoviedb.org/3/movie/${movieId}`, {
-        headers: { 
-          'Authorization': `Bearer ${tmdbKey}`,
-          'accept': 'application/json'
-        },
-         
-        }),
-        
-        axios.get(`https://api.themoviedb.org/3/movie/${movieId}/credits`, {
-          headers: { 
-            'Authorization': `Bearer ${tmdbKey}`,
-            'accept': 'application/json'
-          },
-          
-        }),
-
-        axios.get(`https://api.themoviedb.org/3/movie/${movieId}/videos`, {
-          headers: { 
-            'Authorization': `Bearer ${tmdbKey}`,
-            'accept': 'application/json'
-          },
-          
-        })
-      ]);
 
       // console.log("received here")
       const movieApiData = movieDetailsResponse.data;
