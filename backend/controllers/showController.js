@@ -23,6 +23,8 @@ export const getNowPlayingMovies=async(req,res)=>{
   
 // API to add a new show to the DB
 export const addShow = async (req, res) => {
+  // console.log("=== ADD SHOW REQUEST RECEIVED ===");
+  // console.log("Payload Body:", req.body);
   try {
     const { movieId, showsInput, showPrice } = req.body;
     
@@ -47,6 +49,7 @@ export const addShow = async (req, res) => {
         })
       ]);
 
+      // console.log("received here")
       const movieApiData = movieDetailsResponse.data;
       const movieCreditsData = movieCreditsResponse.data;
       const movieVideosData=movieVideosResponse.data
@@ -117,10 +120,11 @@ export const addShow = async (req, res) => {
       await Show.insertMany(showsToCreate);
     }
 
+    console.log("Show created successfully in DB");
     res.json({ success: true, message: 'Show Added successfully.' });
 
   } catch (error) {
-    console.error(error);
+    console.error("🚨 CRITICAL ADD-SHOW ERROR:",error);
     res.json({ success: false, message: error.message });
   }
 };
