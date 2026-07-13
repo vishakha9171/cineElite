@@ -2,6 +2,7 @@ import stripe from "stripe";
 // backend is using ES Modules (import/export syntax), which strictly requires to include
 //  the .js file extension for your local file imports.
 import Booking from "../models/Booking.js";
+import { inngest } from "../inngest/index.js";
 
 export const stripeWebhooks = async (request, response) => {
   const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
@@ -39,6 +40,12 @@ export const stripeWebhooks = async (request, response) => {
           isPaid: true,
           paymentLink: ""
         });
+
+        // send email confirmation
+        await inngest.send({
+          name:"app/show.booked",
+          data:{bookingId}
+        })
 
         break;
       }
