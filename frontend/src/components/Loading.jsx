@@ -1,4 +1,5 @@
-import { useEffect,useParams,useNavigate } from "react";
+import { useEffect } from "react";
+import {useParams,useNavigate} from 'react-router-dom'
 
 const Loading = () => {
   const { nextUrl } = useParams();

@@ -54,8 +54,7 @@ const syncUserUpdation = inngest.createFunction(
 //  if payment is not made
 const releaseSeatsAndDeleteBooking = inngest.createFunction(
   { id: 'release-seats-delete-booking',
-     triggers:[{ event: "app/checkpayment" }]},
-  
+     triggers:[{ event: "app/checkpayment" }]},  
   async ({ event, step }) => {
     
     const tenMinutesLater = new Date(Date.now() + 10 * 60 * 1000);
@@ -84,10 +83,28 @@ const releaseSeatsAndDeleteBooking = inngest.createFunction(
   }
 );
 
+// Inngest Function to send email when user books a show
+const sendBookingConfirmationEmail = inngest.createFunction(
+  { id: "send-booking-confirmation-email",triggers:[{ event: "app/show.booked" }] },
+  async ({ event, step }) => {
+    // Destructure the incoming identification parameters from the event payload
+    const { bookingId } = event.data;
+
+    // Execute deep document population chains to resolve show runtime maps, movie metadata, and user contexts
+    const booking = await Booking.findById(bookingId)
+      .populate({
+        path: 'show',
+        populate: { path: "movie", model: "Movie" }
+      })
+      .populate('user');
+  }
+);
+
 // Add the function to the exported array:
 export const functions = [
   syncUserCreation,
   syncUserDeletion,
   syncUserUpdation,
-  releaseSeatsAndDeleteBooking
+  releaseSeatsAndDeleteBooking,
+  sendBookingConfirmationEmail,
 ];
