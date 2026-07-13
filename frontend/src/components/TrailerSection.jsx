@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import ReactPlayer from 'react-player';
 import { Play } from 'lucide-react';
 import { dummyTrailers } from '../assets/assets';
 import BackdropCircle from './BackdropCircle';
@@ -22,14 +21,14 @@ const TrailersSection = () => {
         
         <div className='relative aspect-video rounded-2xl overflow-hidden bg-zinc-900 shadow-2xl border border-zinc-800/50 group z-10'>
           {isPlaying ? (
-            <ReactPlayer 
-              url={currentTrailer.videoUrl} 
-              playing={true}
-              controls={true}
-              width="100%" 
-              height="100%"
-            />
-          ) : (
+              <iframe
+                className="absolute inset-0 w-full h-full"
+                src={currentTrailer.videoUrl}
+                title="Movie Trailer"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : (
             <div 
               onClick={() => setIsPlaying(true)}
               className="absolute inset-0 w-full h-full cursor-pointer group"
