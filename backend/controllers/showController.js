@@ -35,17 +35,45 @@ export const addShow = async (req, res) => {
     // console.log(process.env.TMDB_API_KEY);
 
     if (!movie) {
+      const tmdbKey = process.env.TMDB_API_KEY?.trim();
       const [movieDetailsResponse, movieCreditsResponse, movieVideosResponse] = await Promise.all([
+        
+        // axios.get(`https://api.themoviedb.org/3/movie/${movieId}`, {
+        //   headers: { 'Authorization': `Bearer ${process.env.TMDB_API_KEY}`}
+        // }),
+        
+        // axios.get(`https://api.themoviedb.org/3/movie/${movieId}/credits`, {
+        //   headers: { 'Authorization': `Bearer ${process.env.TMDB_API_KEY}`}
+        // }),
+
+        // axios.get(`https://api.themoviedb.org/3/movie/${movieId}/videos`, {
+        //   headers: { 'Authorization': `Bearer ${process.env.TMDB_API_KEY}`}
+        // })
+
+
+        // Since you are using a TMDB v4 Token,remove it from the params configuration object and send it exclusively inside an HTTP Authorization Header.
         axios.get(`https://api.themoviedb.org/3/movie/${movieId}`, {
-          headers: { 'Authorization': `Bearer ${process.env.TMDB_API_KEY}`}
+        headers: { 
+          'Authorization': `Bearer ${tmdbKey}`,
+          'accept': 'application/json'
+        },
+        timeout: 10000 
         }),
         
         axios.get(`https://api.themoviedb.org/3/movie/${movieId}/credits`, {
-          headers: { 'Authorization': `Bearer ${process.env.TMDB_API_KEY}`}
+          headers: { 
+            'Authorization': `Bearer ${tmdbKey}`,
+            'accept': 'application/json'
+          },
+          timeout: 10000
         }),
 
         axios.get(`https://api.themoviedb.org/3/movie/${movieId}/videos`, {
-          headers: { 'Authorization': `Bearer ${process.env.TMDB_API_KEY}`}
+          headers: { 
+            'Authorization': `Bearer ${tmdbKey}`,
+            'accept': 'application/json'
+          },
+          timeout: 10000
         })
       ]);
 
